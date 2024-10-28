@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('title', 255);
             $table->string('genre', 50);
+            $table->string('photo', 255)->nullable();
+            $table->integer('age_restriction');
+            $table->double('rating');
+            $table->integer('duration');
             $table->date('release_date');
             $table->string('director', 100);
             $table->text('description');

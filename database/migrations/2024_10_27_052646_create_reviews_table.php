@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
+            $table->foreignId('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+            $table->foreignId('movie_id')
+                ->references('id')
+                ->on('movies')
+                ->onDelete('cascade');
             $table->integer('rating');
             $table->text('comment');
-            $table->timestamps('review_date');
+            $table->timestamps();
         });
     }
 

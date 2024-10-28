@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $movies = Movie::all();
+
+        return view('movies.index', compact('movies'));
     }
 
     /**
@@ -20,7 +20,7 @@ class MovieController extends Controller
      */
     public function create()
     {
-        //
+        return view('movies.create');
     }
 
     /**
@@ -28,7 +28,44 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+//        $request->validate([
+//            'photo' => 'image|nullable|mimes:jpeg,png,jpg|max:2048',
+//        ]);
+
+//        if ($request->hasFile('photo')) {
+//            $photo = $request->file('photo')->getClientOriginalName();
+//            $filename = pathinfo($photo, PATHINFO_FILENAME);
+//            $extension = $request->file('photo')->getClientOriginalExtension();
+//            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+//            $path = $request->file('photo')->storeAs('public/photos', $fileNameToStore);
+//
+//            Storage::disk('public')->put($path, file_get_contents($request->file('photo')));
+//        }
+
+        $path = $request->file('photo')->store('images', 'public');
+
+        Movie::create([
+            'title' => $request->title,
+            'genre' =>  $request->genre,
+            'release_date' =>  $request->release_date,
+            'age_restriction' =>  $request->age_restriction,
+            'duration' =>  $request->duration,
+            'director' =>  $request->director,
+            'description' =>  $request->description,
+            'photo' =>  $path,
+            'rating' => 0,
+        ]);
+
+//        $ratingValue = 0;
+//        $movie = new Movie();
+//        $movie->title =  $request->title;
+//
+//
+//        $movie->rating = $ratingValue;
+//
+//        $movie->save();
+
+        return redirect('/movies');
     }
 
     /**
