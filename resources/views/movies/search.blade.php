@@ -7,10 +7,9 @@
 @endsection
 
 @section('content')
-
     <div class="container mb-4">
-        <h2 class="mt-4">Daftar Film</h2>
-        <p class="text-secondary">Film apa yang kamu cari?</p>
+        <h2 class="mt-4">Mencari "{{ $query }}"</h2>
+        <p class="text-secondary">Ini yang kami temukan</p>
 
         <div class="row">
             @foreach($movies as $movie)
@@ -31,7 +30,8 @@
                                 </div>
                                 <h5 class="card-title">{{ $movie->title }}</h5>
                                 <div class="mt-auto">
-                                    <a href="{{ route('movies.show', $movie->id)  }}" class="mb-2 btn btn-outline-primary d-block">
+                                    <a href="{{ route('movies.show', $movie->id)  }}"
+                                       class="mb-2 btn btn-outline-primary d-block">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                              fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path
@@ -55,10 +55,6 @@
             @endforeach
         </div>
     </div>
-
-@endsection
-
-@section('script')
 
 @endsection
 

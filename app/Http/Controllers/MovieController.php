@@ -11,7 +11,6 @@ class MovieController extends Controller
     public function index()
     {
         $movies = Movie::all();
-
         return view('movies.index', compact('movies'));
     }
 
@@ -28,75 +27,124 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-//        $request->validate([
-//            'photo' => 'image|nullable|mimes:jpeg,png,jpg|max:2048',
-//        ]);
 
-//        if ($request->hasFile('photo')) {
-//            $photo = $request->file('photo')->getClientOriginalName();
-//            $filename = pathinfo($photo, PATHINFO_FILENAME);
-//            $extension = $request->file('photo')->getClientOriginalExtension();
-//            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
-//            $path = $request->file('photo')->storeAs('public/photos', $fileNameToStore);
-//
-//            Storage::disk('public')->put($path, file_get_contents($request->file('photo')));
-//        }
+        $path = "images/no_images.png";
 
-        $path = $request->file('photo')->store('images', 'public');
+        if ($request->hasFile('photo'))
+        {
+            $request->validate([
+                'photo' => 'image|nullable|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            $path = $request->file('photo')->store('images', 'public');
+        }
 
         Movie::create([
             'title' => $request->title,
-            'genre' =>  $request->genre,
-            'release_date' =>  $request->release_date,
-            'age_restriction' =>  $request->age_restriction,
-            'duration' =>  $request->duration,
-            'director' =>  $request->director,
-            'description' =>  $request->description,
-            'photo' =>  $path,
-            'rating' => 0,
+            'genre' => $request->genre,
+            'release_date' => $request->release_date,
+            'age_restriction' => $request->age_restriction,
+            'duration' => $request->duration,
+            'trailer' => $request->trailer,
+            'director' => $request->director,
+            'description' => $request->description,
+            'photo' => $path,
+            'rating' => $request->rating,
         ]);
 
-//        $ratingValue = 0;
-//        $movie = new Movie();
-//        $movie->title =  $request->title;
-//
-//
-//        $movie->rating = $ratingValue;
-//
-//        $movie->save();
-
-        return redirect('/movies');
+        return redirect()->route('admin.index')->with('success', 'Movie has been created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Movie $movie)
+    public function show($id)
     {
-        //
+        $movie = Movie::find($id);
+        return view('movies.show', compact('movie'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Movie $movie)
+    public function edit($id)
     {
-        //
+        $movie = Movie::find($id);
+        return view('movies.edit', compact('movie'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Movie $movie)
+    public function update(Request $request, $id)
     {
-        //
+        $movie = Movie::find($id);
+
+        $oldImage = $movie->photo;
+
+        if ($request->hasFile('photo'))
+        {
+            $request->validate([
+                'photo' => 'image|nullable|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            if ($movie->photo != "images/no_image.png")
+            {
+                Storage::disk('public')->delete($movie->photo);
+            }
+
+            $path = $request->file('photo')->store('images', 'public');
+        }
+        else if ($oldImage != "images/no_image.png")
+        {
+            $path = $oldImage;
+        }
+        else
+        {
+            $path = 'images/no_images.png';
+        }
+
+        $movie->title = $request->title;
+        $movie->genre = $request->genre;
+        $movie->release_date = $request->release_date;
+        $movie->age_restriction = $request->age_restriction;
+        $movie->duration = $request->duration;
+        $movie->trailer = $request->trailer;
+        $movie->director = $request->director;
+        $movie->description = $request->description;
+        $movie->photo = $path;
+        $movie->rating = $request->rating;
+        $movie->save();
+
+        return redirect()->route('admin.index')->with('success', 'Movie has been updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Movie $movie)
+    public function destroy($id)
     {
-        //
+        $movie = Movie::find($id);
+
+        if ($movie)
+        {
+            if ($movie->photo && $movie->photo != "images/no_images.png")
+            {
+                Storage::disk('public')->delete($movie->photo);
+            }
+
+            $movie->delete();
+
+            return redirect()->route('admin.index')->with('success', 'Movie has been deleted successfully.');
+        }
+
+        return redirect()->route('admin.index')->with('error', 'Movie not found.');
+    }
+    public function search(Request $request)
+    {
+        $query = $request->input('search');
+        $movies = Movie::where('title', 'LIKE', "%{$query}%")
+            ->orWhere('genre', 'LIKE', "%{$query}%")->get();
+        return view('movies.search', ['movies' => $movies, 'query' => $query]);
     }
 }

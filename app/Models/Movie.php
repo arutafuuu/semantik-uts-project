@@ -13,6 +13,7 @@ class Movie extends Model
         'age_restriction',
         'rating',
         'duration',
+        'trailer',
         'director',
         'description',
         'photo'

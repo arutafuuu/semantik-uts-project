@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('duration');
             $table->date('release_date');
             $table->string('director', 100);
+            $table->string('trailer');
             $table->text('description');
             $table->timestamps();
         });
