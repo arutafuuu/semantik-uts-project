@@ -28,7 +28,7 @@ class MovieController extends Controller
     public function store(Request $request)
     {
 
-        $path = "images/no_images.png";
+        $path = "images/no_image.png";
 
         if ($request->hasFile('photo'))
         {
@@ -101,7 +101,7 @@ class MovieController extends Controller
         }
         else
         {
-            $path = 'images/no_images.png';
+            $path = 'images/no_image.png';
         }
 
         $movie->title = $request->title;
@@ -128,7 +128,7 @@ class MovieController extends Controller
 
         if ($movie)
         {
-            if ($movie->photo && $movie->photo != "images/no_images.png")
+            if ($movie->photo && $movie->photo != "images/no_image.png")
             {
                 Storage::disk('public')->delete($movie->photo);
             }
